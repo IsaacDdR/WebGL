@@ -29,6 +29,18 @@ main();
    void main() {
      gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
    };
+   const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+
+   const programInfo = {
+     program: shaderProgram,
+     attribLocations: {
+       vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+     },
+     uniformLocations: {
+       projectionMatrix: gl.getUniformLocation(shaderProgram, 'uShaderProgram'),
+       modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+     }
+   }
 
   function initShaderProgram(gl, vsSource, fsSource) {
     const vertexShader = loaderShader(gl, gl.VERTEX_SHADER, vsSource);
@@ -63,18 +75,6 @@ main();
     return shader;
   }
 
-  const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
-
-  const programInfo = {
-    program: shaderProgram,
-    attribLocations: {
-      vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-      },
-      uniformLocations: {
-        projectionMatrix: gl.getUniformLocation(shaderProgram, 'uShaderProgram'),
-        modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
-      }
-    }
 
   function initBuffers(gl){
 
