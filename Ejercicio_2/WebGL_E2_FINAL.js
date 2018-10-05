@@ -38,9 +38,106 @@ function loadShader(gl, type, source) {
 
   gl.compileShader(shader);
 
-  if (!gl.gerShaderParameter(shader, gl.COMPILE_STATUS)){
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)){
     alert('Ocurrio un error fatal: 'gl.getShaderInfoLog(shader));
     gl.deleteShader(shader);
+    return null;
   }
   return shader;
+}
+
+const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
+
+const programInfo = {
+  program: shaderProgram,
+  attribLocations: {
+    vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+    },
+    uniformLocations: {
+      projectionMatrix: gl.getUniformLocation(shaderProgram, 'uShaderProgram'),
+      modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+    }
+  }
+}
+function initBuffers(gl){
+
+  const positionBuffer = gl.createBuffer();
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+  const positions = [
+    -1.0, 1.0,
+     1.0, -1.0,
+    -1.0, 1.0,
+     1.0, 1.0,
+  ];
+
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions),
+                gl.STATUS_DRAW);
+  return{
+    positon: positionBuffer,
+  };
+}
+
+function drawScene(gl, programInfo, buffers){
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearDepth(1.0);
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthFunc(gl.LEQUAL);
+
+  gl.clear(gl.COLOR_BUFFER_BIT |  gl.DEPTH_BUFFER_BIT);
+
+  const fieldOfView = 45 * Math.PI/ 180;
+  const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+  const zNear = 0.1;
+  const zFar = 100;
+  const projectionMatrix = mat4.create();
+
+  mat4.perspective(projectionMatrix,
+                  fieldOfView,
+                  aspect,
+                  zNear,
+                  zFar);
+  const modelViewMatrix = mat4.create();
+
+  mat4.translate(modelViewMatrix,
+                  modelViewMatrix,
+                [-0.0, 0.0, -6.0]);
+
+
+  {
+    const numComponents = 2;
+    const type = gl.FLOAT;
+    const noramlize = false;
+    const stride = 0;
+
+    const offset = 0;
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+    gl.vertexAttribPointer(
+        programInfo.attribLocations.vertexPosition,
+        numComponents,
+        type,
+        normalize,
+        stride,
+        offset);
+    gl.enableVertexAttribArray(
+      programInfo.attribLocations.vertexPosition);
+  }
+
+  gl.useProgram(programInfo.program);
+
+  gl.uniformMatrix4fv(
+    programInfo.uniformLocations.projectionMatrix,
+    false,
+    projectionMatrix);
+  gl.uniformMatrix4fv(
+    programInfo.uniformLocations.modelViewMatrix,
+    false,
+    modelViewMatrix);
+
+  {
+    const offset = 0;
+    const vertexCount = 4;
+    gl.drawArray(gl.TRIANGLE_STRIP, offset, vertexCount);
+  }
 }
