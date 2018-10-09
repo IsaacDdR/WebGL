@@ -152,7 +152,6 @@ main();
       programInfo.uniformLocations.modelViewMatrix,
       false,
       modelViewMatrix);
-
     {
       const offset = 0;
       const vertexCount = 4;
