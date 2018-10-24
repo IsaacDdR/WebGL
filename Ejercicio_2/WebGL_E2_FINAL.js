@@ -14,7 +14,7 @@ main();
 
     gl.clear(gl.COLOR_BUFFER_BIT);
   }
-  const vsSource =
+  const vsSource = 
 
     attribute vec4 aVertexPosition;
 
