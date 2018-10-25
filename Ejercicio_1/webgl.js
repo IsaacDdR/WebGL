@@ -1,7 +1,7 @@
 main();
 
 function main(){
-  const canvas = documents.querySelector(#glCanvas);
+  const canvas = document.querySelector('#glCanvas');
   const gl = canvas.getContext("webgl");
 
   if (gl === null){
